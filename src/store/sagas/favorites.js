@@ -1,9 +1,10 @@
 import api from '../../services/api';
 import {call, put} from 'redux-saga/effects';
-import { addFavoriteSuccess } from '../actions/favorites'
+import { addFavoriteSuccess, addFavoriteFailure } from '../actions/favorites'
 
 export function* addFavorite(action) {
-    const { data } = yield call(api.get, `repos/${action.payload.repository}`);
+    try{
+        const { data } = yield call(api.get, `repos/${action.payload.repository}`);
 
     const repositoryData = {
         id: data.id,
@@ -13,4 +14,8 @@ export function* addFavorite(action) {
     };
 
     yield put(addFavoriteSuccess(repositoryData));
+
+    }catch(err) {
+        yield put(addFavoriteFailure("Erro ao adicionar o repositório"))
+    }
 }
