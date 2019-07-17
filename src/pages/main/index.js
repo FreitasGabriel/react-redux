@@ -8,13 +8,16 @@ import * as FavoriteActions from '../../store/actions/favorites';
 class Main extends Component {
     
     static propTypes = {
-        addFavorites: PropTypes.func.isRequired,
-        favorite: PropTypes.arrayOf(PropTypes.shape({
-            id: PropTypes.number,
-            name: PropTypes.string,
-            description: PropTypes.string,
-            url: PropTypes.string
-        }))
+        addFavoriteRequest: PropTypes.func.isRequired,
+        favorite: PropTypes.shape({
+            loading: PropTypes.bool,
+            data: PropTypes.arrayOf(PropTypes.shape({
+                id: PropTypes.number,
+                name: PropTypes.string,
+                description: PropTypes.string,
+                url: PropTypes.string
+            }))
+        })
     }
 
     state = {
@@ -24,7 +27,9 @@ class Main extends Component {
     handleAddRepository = (event) => {
         event.preventDefault();
 
-        this.props.addFavorites();
+        this.props.addFavoriteRequest(this.state.repositoryInput);
+
+        this.setState({repositoryInput: ''});
     }
 
     render() {
@@ -36,10 +41,12 @@ class Main extends Component {
                     value={ this.state.repositoryInput}
                     onChange={e => this.setState({ repositoryInput: e.target.value})}/>
                     <button type="submit">Adicionar</button>
+
+                    {this.props.favorites.loading && <span>Carregando...</span>}
                 </form>
 
                 <ul>
-                    {this.props.favorites.map(favorite => (
+                    {this.props.favorites.data.map(favorite => (
                         <li key={favorite.id}>
                         <p>
                             <strong>{favorite.name}</strong> ({favorite.description})
